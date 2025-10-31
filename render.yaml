@@ -1,4 +1,5 @@
 services:
+  # === BACKEND SERVICE ===
   - type: web
     name: taxpal-backend
     env: node
@@ -9,6 +10,7 @@ services:
         value: production
     autoDeploy: true
 
+  # === FRONTEND SERVICE ===
   - type: web
     name: taxpal-frontend
     env: node
