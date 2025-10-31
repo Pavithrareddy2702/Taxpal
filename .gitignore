@@ -4,10 +4,10 @@ node_modules/
 # package.json
 
 # Build output
-dist/
-build/
-tmp/
-temp/
+# dist/
+# build/
+# tmp/
+# temp/
 
 # Compiled source
 *.js.map
