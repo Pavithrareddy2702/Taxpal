@@ -1,0 +1,121 @@
+<!-- Root -->
+<div class="dashboard-root" [class.overlay-open]="sidebarActive">
+
+  <!-- Overlay for sidebar -->
+  <div class="overlay" *ngIf="sidebarActive" (click)="closeSidebarOverlay()"></div>
+
+  <!-- Main area -->
+  <main class="main-area">
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <h1 class="title">
+        <span *ngFor="let letter of dashboardLetters; let i = index" 
+              [style.animationDelay]="i*0.1+'s'">{{ letter }}</span>
+      </h1>
+      <div class="button-group-top">
+        <button mat-raised-button color="primary" (click)="openIncomeForm()">Add Income</button>
+        <button mat-raised-button color="warn" (click)="openExpenseForm()">Add Expense</button>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <section class="charts-row">
+
+      <!-- Income vs Expenses Chart -->
+      <div class="card chart-card big">
+        <h3>Income vs Expenses</h3>
+
+        <div *ngIf="transactions.length > 0; else noIncomeExpensesData">
+          <div class="chart-filter">
+            <label for="period">View by:</label>
+            <select id="period" [(ngModel)]="selectedPeriod" (change)="onPeriodChange(selectedPeriod)">
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+          <div class="chart-wrap">
+            <canvas baseChart [data]="barChartData" [options]="barChartOptions" chartType="bar"></canvas>
+          </div>
+        </div>
+
+        <ng-template #noIncomeExpensesData>
+          <div class="chart-placeholder">
+            <p>No transactions yet.</p>
+            <p>Add income or expenses to see charts.</p>
+            <img src="assets/empty-chart.svg" alt="No Data" class="placeholder-img"/>
+          </div>
+        </ng-template>
+
+      </div>
+
+      <!-- Expense Breakdown Pie Chart -->
+      <div class="card chart-card small">
+        <h3>Expense Breakdown</h3>
+
+        <div *ngIf="transactions.length > 0; else noPieData">
+          <div class="chart-wrap small-pie">
+            <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="'pie'"></canvas>
+          </div>
+          <ul class="legend">
+            <li *ngFor="let label of pieChartData.labels; let i = index">
+              <span>{{ label }}</span>
+              <span>{{ pieChartData.datasets[0].data[i] }}%</span>
+            </li>
+          </ul>
+        </div>
+
+        <ng-template #noPieData>
+          <div class="chart-placeholder">
+            <p>No expense data available.</p>
+            <img src="assets/empty-pie.svg" alt="No Data" class="placeholder-img"/>
+          </div>
+        </ng-template>
+
+      </div>
+
+    </section>
+
+    <!-- Recent Transactions Section -->
+    <section class="recent card">
+      <h3>Recent Transactions</h3>
+
+      <table class="tx-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- No Transactions -->
+          <tr *ngIf="transactions.length === 0">
+            <td colspan="5" class="text-center">No transactions available</td>
+          </tr>
+
+          <!-- Recent Transactions -->
+          <tr *ngFor="let tx of recentTransactions; trackBy: trackByIndex">
+            <td>{{ tx.date | date:'mediumDate' }}</td>
+            <td>{{ tx.description }}</td>
+            <td>{{ tx.category }}</td>
+            <td [class.negative]="tx.amount < 0">${{ tx.amount | number:'1.2-2' }}</td>
+            <td>{{ tx.type }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Toggle Show All Button -->
+      <div class="view-all-wrapper" *ngIf="transactions.length > 5">
+        <button mat-button color="primary" (click)="toggleShowAllTransactions()">
+          {{ showAllTransactions ? 'Show Less' : 'View All' }}
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
